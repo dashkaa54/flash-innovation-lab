@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import BottomNav from "@/components/BottomNav"
 import ScannerTab from "@/components/tabs/ScannerTab"
 import SecurityTab from "@/components/tabs/SecurityTab"
@@ -13,10 +13,50 @@ type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos'
 const darkBg = '#0d1424'
 const lightBg = '#f0f4ff'
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
+
 export default function Index() {
   const [activeTab, setActiveTab] = useState<Tab>('scanner')
   const { theme, toggle } = useTheme()
   const isDark = theme === 'dark'
+
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const [showBanner, setShowBanner] = useState(false)
+  const [installed, setInstalled] = useState(false)
+
+  useEffect(() => {
+    // Проверяем — уже установлено?
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    if (isStandalone) { setInstalled(true); return }
+
+    // Уже закрывали баннер?
+    const dismissed = localStorage.getItem('pwa_banner_dismissed')
+    if (dismissed) return
+
+    const handler = (e: Event) => {
+      e.preventDefault()
+      setInstallPrompt(e as BeforeInstallPromptEvent)
+      setShowBanner(true)
+    }
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  const handleInstall = async () => {
+    if (!installPrompt) return
+    await installPrompt.prompt()
+    const { outcome } = await installPrompt.userChoice
+    if (outcome === 'accepted') setInstalled(true)
+    setShowBanner(false)
+  }
+
+  const handleDismiss = () => {
+    setShowBanner(false)
+    localStorage.setItem('pwa_banner_dismissed', '1')
+  }
 
   return (
     <div
@@ -36,22 +76,70 @@ export default function Index() {
       {/* Theme toggle */}
       <button
         onClick={toggle}
-        className="fixed top-4 right-4 z-50 w-9 h-9 rounded-full flex items-center justify-center transition-all"
+        className="fixed top-4 z-50 w-9 h-9 rounded-full flex items-center justify-center transition-all"
         style={{
           background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
           color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-          maxWidth: 430,
-          right: 'calc(50% - 215px + 16px)',
+          right: 'min(calc(50% - 215px + 16px), calc(100% - 52px))',
         }}
       >
         <Icon name={isDark ? "Sun" : "Moon"} size={18} />
       </button>
+
+      {/* PWA Install Banner */}
+      {showBanner && !installed && (
+        <div
+          className="fixed top-0 left-1/2 z-50 w-full transition-all duration-300"
+          style={{
+            maxWidth: 430,
+            transform: 'translateX(-50%)',
+          }}
+        >
+          <div
+            className="mx-3 mt-3 rounded-2xl p-4 flex items-center gap-3 shadow-2xl"
+            style={{
+              background: isDark ? '#1a2035' : '#ffffff',
+              border: '1px solid rgba(233,30,140,0.3)',
+              boxShadow: '0 8px 32px rgba(233,30,140,0.2)',
+            }}
+          >
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #e91e8c, #c4177a)' }}
+            >
+              <Icon name="Shield" size={22} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm">Установить КиберЩит</p>
+              <p className="text-xs opacity-50 mt-0.5">Добавьте на главный экран — работает без интернета</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <button
+                onClick={handleInstall}
+                className="text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all"
+                style={{ background: '#e91e8c' }}
+              >
+                Установить
+              </button>
+              <button
+                onClick={handleDismiss}
+                className="w-8 h-8 rounded-xl flex items-center justify-center opacity-30 hover:opacity-60 transition-all"
+                style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+              >
+                <Icon name="X" size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main
         style={{
           flex: 1,
           overflowY: 'auto',
           paddingBottom: 80,
+          paddingTop: showBanner ? 76 : 0,
+          transition: 'padding-top 0.3s',
         }}
       >
         {activeTab === 'scanner' && <ScannerTab isDark={isDark} />}
