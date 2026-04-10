@@ -12,6 +12,8 @@ const steps = [
 const contacts = [
   { name: "Сбербанк", icon: "Building2", number: "900", desc: "Горячая линия" },
   { name: "Тинькофф", icon: "Building2", number: "8-800-555-75-75", desc: "Горячая линия" },
+  { name: "Альфа-Банк", icon: "Building2", number: "8-800-200-00-00", desc: "Горячая линия" },
+  { name: "ВТБ", icon: "Building2", number: "8-800-100-24-24", desc: "Горячая линия" },
   { name: "МВД / Киберполиция", icon: "ShieldAlert", number: "102", desc: "Сообщить о киберпреступлении" },
   { name: "Роскомнадзор", icon: "Flag", number: "8-800-222-88-00", desc: "Жалоба на мошеннический сайт" },
 ]
