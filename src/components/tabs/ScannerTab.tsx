@@ -118,13 +118,13 @@ export default function ScannerTab() {
             onChange={(e) => { setUrl(e.target.value); setResult(null) }}
             onKeyDown={(e) => e.key === "Enter" && handleScan()}
             placeholder="https://example.com"
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-3.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#1a6fff]/60 transition"
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-3.5 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#e91e8c]/60 transition"
           />
         </div>
         <button
           onClick={handleScan}
           disabled={!url.trim() || loading}
-          className="w-full bg-[#1a6fff] hover:bg-[#1558e0] disabled:opacity-40 text-white font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
+          className="w-full bg-[#e91e8c] hover:bg-[#c4177a] disabled:opacity-40 text-white font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
         >
           {loading ? (
             <>

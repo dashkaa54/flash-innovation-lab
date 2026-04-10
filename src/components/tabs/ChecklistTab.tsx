@@ -45,11 +45,11 @@ export default function ChecklistTab() {
       <div className="bg-white/5 border border-white/8 rounded-2xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold">Прогресс защиты</p>
-          <span className="text-2xl font-bold text-[#1a6fff]">{done}<span className="text-white/30 text-base font-normal">/{total}</span></span>
+          <span className="text-2xl font-bold text-[#e91e8c]">{done}<span className="text-white/30 text-base font-normal">/{total}</span></span>
         </div>
         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#1a6fff] to-emerald-400 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#e91e8c] to-emerald-400 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

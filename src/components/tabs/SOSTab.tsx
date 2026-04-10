@@ -84,7 +84,7 @@ export default function SOSTab() {
               <p className="text-sm font-medium">{c.name}</p>
               <p className="text-xs text-white/40">{c.desc}</p>
             </div>
-            <div className="flex items-center gap-1 text-[#1a6fff]">
+            <div className="flex items-center gap-1 text-[#e91e8c]">
               <Icon name="Phone" size={14} />
               <span className="text-sm font-mono">{c.number}</span>
             </div>
@@ -103,7 +103,7 @@ export default function SOSTab() {
             rel="noopener noreferrer"
             className="flex items-center gap-3 bg-white/5 border border-white/8 rounded-xl px-4 py-3 hover:bg-white/8 transition"
           >
-            <Icon name="Globe" size={16} className="text-[#1a6fff]" />
+            <Icon name="Globe" size={16} className="text-[#e91e8c]" />
             <p className="text-sm flex-1">{link.name}</p>
             <Icon name="ExternalLink" size={14} className="text-white/30" />
           </a>

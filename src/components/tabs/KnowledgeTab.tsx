@@ -114,7 +114,7 @@ export default function KnowledgeTab() {
               <ul key={i} className="space-y-2">
                 {(block.items as string[]).map((item, j) => (
                   <li key={j} className="flex items-start gap-2 text-sm text-white/70">
-                    <Icon name="CheckCircle" size={14} className="text-[#1a6fff] mt-0.5 flex-shrink-0" />
+                    <Icon name="CheckCircle" size={14} className="text-[#e91e8c] mt-0.5 flex-shrink-0" />
                     {item}
                   </li>
                 ))}

@@ -99,7 +99,7 @@ export default function SecurityTab() {
       {/* Password Checker */}
       <div className="bg-white/5 rounded-2xl p-4 space-y-3 border border-white/8">
         <div className="flex items-center gap-2 mb-1">
-          <Icon name="KeyRound" size={18} className="text-[#1a6fff]" />
+          <Icon name="KeyRound" size={18} className="text-[#e91e8c]" />
           <p className="font-semibold">Проверка пароля</p>
         </div>
         <div className="relative">
@@ -108,7 +108,7 @@ export default function SecurityTab() {
             value={checkPwd}
             onChange={(e) => setCheckPwd(e.target.value)}
             placeholder="Введите свой пароль"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 pr-10 py-3 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#1a6fff]/60 transition"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 pr-10 py-3 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#e91e8c]/60 transition"
           />
           <button onClick={() => setShowCheck(!showCheck)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
             <Icon name={showCheck ? "EyeOff" : "Eye"} size={16} />
@@ -143,7 +143,7 @@ export default function SecurityTab() {
       {/* Generator */}
       <div className="bg-white/5 rounded-2xl p-4 space-y-4 border border-white/8">
         <div className="flex items-center gap-2">
-          <Icon name="Wand2" size={18} className="text-[#1a6fff]" />
+          <Icon name="Wand2" size={18} className="text-[#e91e8c]" />
           <p className="font-semibold">Генератор паролей</p>
         </div>
 
@@ -153,7 +153,7 @@ export default function SecurityTab() {
             <span className="text-white font-mono">{pwdLength}</span>
           </div>
           <input type="range" min={8} max={32} value={pwdLength} onChange={(e) => setPwdLength(Number(e.target.value))}
-            className="w-full accent-[#1a6fff]" />
+            className="w-full accent-[#e91e8c]" />
         </div>
 
         <div className="space-y-2">
@@ -165,7 +165,7 @@ export default function SecurityTab() {
             <label key={opt.label} className="flex items-center gap-3 cursor-pointer">
               <div
                 onClick={() => opt.set(!opt.value)}
-                className={`w-10 h-5 rounded-full transition-all relative ${opt.value ? "bg-[#1a6fff]" : "bg-white/15"}`}
+                className={`w-10 h-5 rounded-full transition-all relative ${opt.value ? "bg-[#e91e8c]" : "bg-white/15"}`}
               >
                 <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${opt.value ? "left-5" : "left-0.5"}`} />
               </div>
@@ -175,7 +175,7 @@ export default function SecurityTab() {
         </div>
 
         <button onClick={handleGenerate}
-          className="w-full bg-[#1a6fff] hover:bg-[#1558e0] text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+          className="w-full bg-[#e91e8c] hover:bg-[#c4177a] text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
           <Icon name="RefreshCw" size={16} />
           Сгенерировать
         </button>
@@ -187,7 +187,7 @@ export default function SecurityTab() {
               <button onClick={() => handleCopy(generated)} className="text-white/40 hover:text-white transition">
                 <Icon name={copied ? "Check" : "Copy"} size={18} />
               </button>
-              <button onClick={openSaveForm} className="text-white/40 hover:text-[#1a6fff] transition">
+              <button onClick={openSaveForm} className="text-white/40 hover:text-[#e91e8c] transition">
                 <Icon name="Save" size={18} />
               </button>
             </div>
@@ -214,15 +214,15 @@ export default function SecurityTab() {
       <div className="rounded-2xl border border-white/8 overflow-hidden" style={{ background: 'hsl(220, 26%, 18%)' }}>
         <div className="flex items-center justify-between px-4 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'hsla(220,80%,56%,0.18)' }}>
-              <Icon name="Lock" size={18} style={{ color: 'hsl(220,80%,70%)' }} />
+            <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'hsla(328,80%,50%,0.18)' }}>
+              <Icon name="Lock" size={18} style={{ color: '#e91e8c' }} />
             </div>
             <span className="font-semibold text-white">Мои пароли</span>
           </div>
           <button
             onClick={openSaveForm}
             className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
-            style={{ background: 'hsla(220,80%,56%,0.18)', color: 'hsl(220,80%,70%)' }}
+            style={{ background: 'hsla(328,80%,50%,0.18)', color: '#e91e8c' }}
           >
             <Icon name="Plus" size={18} />
           </button>
@@ -256,7 +256,7 @@ export default function SecurityTab() {
               <button
                 onClick={handleSave}
                 className="flex-1 text-white text-sm py-3 rounded-xl transition font-semibold"
-                style={{ background: 'hsl(220,80%,56%)' }}
+                style={{ background: '#e91e8c' }}
               >
                 Сохранить
               </button>
