@@ -1,41 +1,34 @@
-import { WaitlistSignup } from "@/components/WaitlistSignup"
-import { Toaster } from "@/components/ui/toaster"
+import { useState } from "react"
+import BottomNav from "@/components/BottomNav"
+import ScannerTab from "@/components/tabs/ScannerTab"
+import SecurityTab from "@/components/tabs/SecurityTab"
+import KnowledgeTab from "@/components/tabs/KnowledgeTab"
+import ChecklistTab from "@/components/tabs/ChecklistTab"
+import SOSTab from "@/components/tabs/SOSTab"
 
-const backgroundStyle = `
-  .bg-pattern {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .content {
-    position: relative;
-    z-index: 2;
-  }
-`
+type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos'
 
 export default function Index() {
+  const [activeTab, setActiveTab] = useState<Tab>('scanner')
+
   return (
-    <main
-      className="min-h-screen flex items-center justify-center"
+    <div
+      className="relative flex flex-col"
       style={{
-        background: "radial-gradient(circle at center, #1E40AF, #000000)",
+        minHeight: '100dvh',
+        maxWidth: 430,
+        margin: '0 auto',
+        background: 'hsl(220, 26%, 14%)',
       }}
     >
-      <style>{backgroundStyle}</style>
-      <div className="bg-pattern"></div>
-      <div className="content w-full">
-        <WaitlistSignup />
-      </div>
-      <Toaster />
-    </main>
+      <main className="flex-1 overflow-y-auto pb-20" style={{ minHeight: 0 }}>
+        {activeTab === 'scanner' && <ScannerTab />}
+        {activeTab === 'security' && <SecurityTab />}
+        {activeTab === 'knowledge' && <KnowledgeTab />}
+        {activeTab === 'checklist' && <ChecklistTab />}
+        {activeTab === 'sos' && <SOSTab />}
+      </main>
+      <BottomNav active={activeTab} onChange={setActiveTab} />
+    </div>
   )
 }
