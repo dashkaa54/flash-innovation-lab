@@ -198,30 +198,111 @@ export default function SecurityTab() {
         )}
       </div>
 
-      {/* Saved passwords */}
-      {saved.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs text-white/40 uppercase tracking-wider">Сохранённые пароли</p>
-          {saved.map((p) => (
-            <div key={p.id} className="bg-white/5 border border-white/8 rounded-xl px-4 py-3 flex items-center gap-3">
-              <Icon name="Key" size={16} className="text-white/30" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{p.label}</p>
-                <p className="font-mono text-xs text-white/50 truncate">{p.hidden ? "••••••••••••" : p.password}</p>
+      {/* Мои пароли */}
+      <div className="rounded-2xl border border-white/8 overflow-hidden" style={{ background: 'hsl(220, 26%, 18%)' }}>
+        <div className="flex items-center justify-between px-4 py-3.5">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'hsla(220,80%,56%,0.18)' }}>
+              <Icon name="Lock" size={18} style={{ color: 'hsl(220,80%,70%)' }} />
+            </div>
+            <span className="font-semibold text-white">Мои пароли</span>
+          </div>
+          <button
+            onClick={() => setShowSaveForm(true)}
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+            style={{ background: 'hsla(220,80%,56%,0.18)', color: 'hsl(220,80%,70%)' }}
+          >
+            <Icon name="Plus" size={18} />
+          </button>
+        </div>
+
+        {showSaveForm && (
+          <div className="px-4 pb-3 space-y-2 border-t border-white/8 pt-3">
+            <input
+              value={saveLabel}
+              onChange={(e) => setSaveLabel(e.target.value)}
+              placeholder="Название (например: Почта Google)"
+              className="w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none transition"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+            />
+            {!generated && (
+              <input
+                type="text"
+                placeholder="Введите пароль вручную"
+                id="manual-pwd"
+                className="w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none transition"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                onChange={(e) => {
+                  const el = e.target as HTMLInputElement
+                  el.dataset.val = el.value
+                }}
+              />
+            )}
+            {generated && (
+              <div className="rounded-xl px-3 py-2 text-xs font-mono" style={{ background: 'rgba(255,255,255,0.05)', color: 'hsl(142,71%,55%)' }}>
+                {generated}
               </div>
-              <button onClick={() => toggleHidden(p.id)} className="text-white/30 hover:text-white/60">
-                <Icon name={p.hidden ? "Eye" : "EyeOff"} size={15} />
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const manualEl = document.getElementById('manual-pwd') as HTMLInputElement | null
+                  const pwd = generated || manualEl?.value || ''
+                  if (!pwd || !saveLabel.trim()) return
+                  setSaved((prev) => [...prev, { id: Date.now(), label: saveLabel.trim(), password: pwd, hidden: true }])
+                  setSaveLabel('')
+                  setShowSaveForm(false)
+                }}
+                className="flex-1 text-white text-sm py-2 rounded-xl transition font-semibold"
+                style={{ background: 'hsl(220,80%,56%)' }}
+              >
+                Сохранить
               </button>
-              <button onClick={() => handleCopy(p.password)} className="text-white/30 hover:text-white/60">
-                <Icon name="Copy" size={15} />
-              </button>
-              <button onClick={() => removeSaved(p.id)} className="text-white/30 hover:text-red-400">
-                <Icon name="Trash2" size={15} />
+              <button
+                onClick={() => setShowSaveForm(false)}
+                className="flex-1 text-white/60 text-sm py-2 rounded-xl transition"
+                style={{ background: 'rgba(255,255,255,0.07)' }}
+              >
+                Отмена
               </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+
+        {saved.length === 0 && !showSaveForm ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-3 border-t border-white/8">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.05)' }}>
+              <Icon name="Lock" size={26} className="text-white/20" />
+            </div>
+            <p className="text-sm text-white/30">Здесь будут сохранённые пароли</p>
+          </div>
+        ) : (
+          saved.length > 0 && (
+            <div className="border-t border-white/8 divide-y divide-white/5">
+              {saved.map((p) => (
+                <div key={p.id} className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <Icon name="KeyRound" size={14} className="text-white/40" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white">{p.label}</p>
+                    <p className="font-mono text-xs text-white/40 truncate">{p.hidden ? "••••••••••••" : p.password}</p>
+                  </div>
+                  <button onClick={() => toggleHidden(p.id)} className="text-white/30 hover:text-white/60 p-1">
+                    <Icon name={p.hidden ? "Eye" : "EyeOff"} size={15} />
+                  </button>
+                  <button onClick={() => handleCopy(p.password)} className="text-white/30 hover:text-white/60 p-1">
+                    <Icon name="Copy" size={15} />
+                  </button>
+                  <button onClick={() => removeSaved(p.id)} className="text-white/30 hover:text-red-400 p-1">
+                    <Icon name="Trash2" size={15} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )
+        )}
+      </div>
     </div>
   )
 }
