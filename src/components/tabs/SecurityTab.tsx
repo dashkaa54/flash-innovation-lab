@@ -31,6 +31,7 @@ function generatePassword(length: number, upper: boolean, nums: boolean, symbols
 interface SavedPassword {
   id: number
   label: string
+  login: string
   password: string
   hidden: boolean
 }
@@ -49,10 +50,14 @@ export default function SecurityTab() {
 
   const [saved, setSaved] = useState<SavedPassword[]>([])
   const [saveLabel, setSaveLabel] = useState("")
+  const [saveLogin, setSaveLogin] = useState("")
+  const [savePassword, setSavePassword] = useState("")
   const [showSaveForm, setShowSaveForm] = useState(false)
 
   const handleGenerate = () => {
-    setGenerated(generatePassword(pwdLength, useUpper, useNums, useSymbols))
+    const pwd = generatePassword(pwdLength, useUpper, useNums, useSymbols)
+    setGenerated(pwd)
+    setSavePassword(pwd)
     setCopied(false)
   }
 
@@ -63,10 +68,17 @@ export default function SecurityTab() {
   }
 
   const handleSave = () => {
-    if (!generated || !saveLabel.trim()) return
-    setSaved((prev) => [...prev, { id: Date.now(), label: saveLabel.trim(), password: generated, hidden: true }])
+    if (!saveLabel.trim() || !savePassword.trim()) return
+    setSaved((prev) => [...prev, { id: Date.now(), label: saveLabel.trim(), login: saveLogin.trim(), password: savePassword.trim(), hidden: true }])
     setSaveLabel("")
+    setSaveLogin("")
+    setSavePassword("")
     setShowSaveForm(false)
+  }
+
+  const openSaveForm = () => {
+    setSavePassword(generated)
+    setShowSaveForm(true)
   }
 
   const toggleHidden = (id: number) => {
@@ -175,7 +187,7 @@ export default function SecurityTab() {
               <button onClick={() => handleCopy(generated)} className="text-white/40 hover:text-white transition">
                 <Icon name={copied ? "Check" : "Copy"} size={18} />
               </button>
-              <button onClick={() => setShowSaveForm(true)} className="text-white/40 hover:text-[#1a6fff] transition">
+              <button onClick={openSaveForm} className="text-white/40 hover:text-[#1a6fff] transition">
                 <Icon name="Save" size={18} />
               </button>
             </div>
@@ -208,7 +220,7 @@ export default function SecurityTab() {
             <span className="font-semibold text-white">Мои пароли</span>
           </div>
           <button
-            onClick={() => setShowSaveForm(true)}
+            onClick={openSaveForm}
             className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
             style={{ background: 'hsla(220,80%,56%,0.18)', color: 'hsl(220,80%,70%)' }}
           >
@@ -217,51 +229,41 @@ export default function SecurityTab() {
         </div>
 
         {showSaveForm && (
-          <div className="px-4 pb-3 space-y-2 border-t border-white/8 pt-3">
+          <div className="px-4 pb-4 space-y-3 border-t border-white/8 pt-4">
+            <p className="font-semibold text-white text-sm">Добавить новый пароль</p>
             <input
               value={saveLabel}
               onChange={(e) => setSaveLabel(e.target.value)}
-              placeholder="Название (например: Почта Google)"
-              className="w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none transition"
+              placeholder="Название сервиса"
+              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none transition"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
             />
-            {!generated && (
-              <input
-                type="text"
-                placeholder="Введите пароль вручную"
-                id="manual-pwd"
-                className="w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/25 focus:outline-none transition"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-                onChange={(e) => {
-                  const el = e.target as HTMLInputElement
-                  el.dataset.val = el.value
-                }}
-              />
-            )}
-            {generated && (
-              <div className="rounded-xl px-3 py-2 text-xs font-mono" style={{ background: 'rgba(255,255,255,0.05)', color: 'hsl(142,71%,55%)' }}>
-                {generated}
-              </div>
-            )}
-            <div className="flex gap-2">
+            <input
+              value={saveLogin}
+              onChange={(e) => setSaveLogin(e.target.value)}
+              placeholder="Логин или email"
+              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none transition"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+            />
+            <input
+              value={savePassword}
+              onChange={(e) => setSavePassword(e.target.value)}
+              placeholder="Пароль"
+              className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none transition font-mono"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+            />
+            <div className="flex gap-3 pt-1">
               <button
-                onClick={() => {
-                  const manualEl = document.getElementById('manual-pwd') as HTMLInputElement | null
-                  const pwd = generated || manualEl?.value || ''
-                  if (!pwd || !saveLabel.trim()) return
-                  setSaved((prev) => [...prev, { id: Date.now(), label: saveLabel.trim(), password: pwd, hidden: true }])
-                  setSaveLabel('')
-                  setShowSaveForm(false)
-                }}
-                className="flex-1 text-white text-sm py-2 rounded-xl transition font-semibold"
+                onClick={handleSave}
+                className="flex-1 text-white text-sm py-3 rounded-xl transition font-semibold"
                 style={{ background: 'hsl(220,80%,56%)' }}
               >
                 Сохранить
               </button>
               <button
-                onClick={() => setShowSaveForm(false)}
-                className="flex-1 text-white/60 text-sm py-2 rounded-xl transition"
-                style={{ background: 'rgba(255,255,255,0.07)' }}
+                onClick={() => { setShowSaveForm(false); setSaveLabel(''); setSaveLogin(''); setSavePassword('') }}
+                className="flex-1 text-white/70 text-sm py-3 rounded-xl transition font-semibold"
+                style={{ background: 'rgba(255,255,255,0.1)' }}
               >
                 Отмена
               </button>
@@ -286,6 +288,7 @@ export default function SecurityTab() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white">{p.label}</p>
+                    {p.login && <p className="text-xs text-white/40 truncate">{p.login}</p>}
                     <p className="font-mono text-xs text-white/40 truncate">{p.hidden ? "••••••••••••" : p.password}</p>
                   </div>
                   <button onClick={() => toggleHidden(p.id)} className="text-white/30 hover:text-white/60 p-1">
