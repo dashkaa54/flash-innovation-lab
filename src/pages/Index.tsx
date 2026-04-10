@@ -13,15 +13,23 @@ export default function Index() {
 
   return (
     <div
-      className="relative flex flex-col"
       style={{
         minHeight: '100dvh',
         maxWidth: 430,
         margin: '0 auto',
-        background: 'hsl(220, 26%, 14%)',
+        background: '#0d1424',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
       }}
     >
-      <main className="flex-1 overflow-y-auto pb-20" style={{ minHeight: 0 }}>
+      <main
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          paddingBottom: 80,
+        }}
+      >
         {activeTab === 'scanner' && <ScannerTab />}
         {activeTab === 'security' && <SecurityTab />}
         {activeTab === 'knowledge' && <KnowledgeTab />}
