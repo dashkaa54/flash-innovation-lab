@@ -184,7 +184,7 @@ const categories = [
 
 type Article = (typeof categories)[0]["articles"][0]
 
-export default function KnowledgeTab() {
+export default function KnowledgeTab({ isDark = true }: { isDark?: boolean }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeArticle, setActiveArticle] = useState<Article | null>(null)
 

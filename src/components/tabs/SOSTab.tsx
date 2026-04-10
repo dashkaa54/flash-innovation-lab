@@ -24,7 +24,7 @@ const onlineLinks = [
   { name: "Госуслуги — личный кабинет", url: "https://gosuslugi.ru/profile/personal", icon: "Globe" },
 ]
 
-export default function SOSTab() {
+export default function SOSTab({ isDark = true }: { isDark?: boolean }) {
   const [showSteps, setShowSteps] = useState(false)
 
   return (

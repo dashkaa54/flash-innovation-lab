@@ -11,7 +11,7 @@ const initialTasks = [
   { id: 7, text: "Проверить список приложений с доступом к геолокации", detail: "Оставьте только те, которым действительно нужен доступ", icon: "MapPin" },
 ]
 
-export default function ChecklistTab() {
+export default function ChecklistTab({ isDark = true }: { isDark?: boolean }) {
   const [checked, setChecked] = useState<Set<number>>(new Set())
   const [expanded, setExpanded] = useState<number | null>(null)
 

@@ -5,6 +5,7 @@ type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos';
 interface BottomNavProps {
   active: Tab;
   onChange: (tab: Tab) => void;
+  isDark?: boolean;
 }
 
 const tabs: { id: Tab; label: string; icon: string }[] = [
@@ -15,11 +16,18 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'sos', label: 'SOS', icon: 'Siren' },
 ];
 
-export default function BottomNav({ active, onChange }: BottomNavProps) {
+export default function BottomNav({ active, onChange, isDark = true }: BottomNavProps) {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2 py-2"
-      style={{ background: 'hsl(220, 30%, 11%)', borderTop: '1px solid hsl(220, 26%, 22%)' }}
+      className="fixed bottom-0 z-50 flex items-center justify-around px-2 py-2 transition-all duration-300"
+      style={{
+        background: isDark ? 'hsl(220, 30%, 11%)' : '#ffffff',
+        borderTop: isDark ? '1px solid hsl(220, 26%, 22%)' : '1px solid rgba(0,0,0,0.08)',
+        maxWidth: 430,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+      }}
     >
       {tabs.map((tab) => {
         const isActive = active === tab.id;
@@ -36,9 +44,9 @@ export default function BottomNav({ active, onChange }: BottomNavProps) {
               style={
                 isActive
                   ? isSos
-                    ? { background: 'hsl(var(--danger))', color: '#fff' }
-                    : { background: 'hsl(var(--primary))', color: '#fff' }
-                  : { color: 'hsl(215, 20%, 45%)' }
+                    ? { background: 'hsla(0,72%,51%,0.15)', color: 'hsl(0,72%,60%)' }
+                    : { background: 'hsla(328,80%,50%,0.15)', color: '#e91e8c' }
+                  : { color: isDark ? 'hsl(215, 20%, 45%)' : 'rgba(0,0,0,0.35)' }
               }
             >
               <Icon name={tab.icon} fallback="Circle" size={18} />
@@ -48,9 +56,9 @@ export default function BottomNav({ active, onChange }: BottomNavProps) {
               style={
                 isActive
                   ? isSos
-                    ? { color: 'hsl(var(--danger))' }
-                    : { color: 'hsl(var(--primary))' }
-                  : { color: 'hsl(215, 20%, 45%)' }
+                    ? { color: 'hsl(0,72%,60%)' }
+                    : { color: '#e91e8c' }
+                  : { color: isDark ? 'hsl(215, 20%, 45%)' : 'rgba(0,0,0,0.35)' }
               }
             >
               {tab.label}

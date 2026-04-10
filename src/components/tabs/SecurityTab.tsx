@@ -36,7 +36,7 @@ interface SavedPassword {
   hidden: boolean
 }
 
-export default function SecurityTab() {
+export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
   const [checkPwd, setCheckPwd] = useState("")
   const [showCheck, setShowCheck] = useState(false)
   const strength = getPasswordStrength(checkPwd)
@@ -53,6 +53,17 @@ export default function SecurityTab() {
   const [saveLogin, setSaveLogin] = useState("")
   const [savePassword, setSavePassword] = useState("")
   const [showSaveForm, setShowSaveForm] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const card = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'
+  const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'
+  const input = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'
+  const inputBorder = isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
+
+  const filteredSaved = saved.filter((p) =>
+    p.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.login.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const handleGenerate = () => {
     const pwd = generatePassword(pwdLength, useUpper, useNums, useSymbols)
@@ -93,11 +104,11 @@ export default function SecurityTab() {
     <div className="px-5 py-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Безопасность</h1>
-        <p className="text-white/50 text-sm mt-1">Проверьте и создайте надёжные пароли</p>
+        <p className="text-sm mt-1 opacity-50">Проверьте и создайте надёжные пароли</p>
       </div>
 
       {/* Password Checker */}
-      <div className="bg-white/5 rounded-2xl p-4 space-y-3 border border-white/8">
+      <div className="rounded-2xl p-4 space-y-3" style={{ background: card, border: `1px solid ${border}` }}>
         <div className="flex items-center gap-2 mb-1">
           <Icon name="KeyRound" size={18} className="text-[#e91e8c]" />
           <p className="font-semibold">Проверка пароля</p>
@@ -108,9 +119,10 @@ export default function SecurityTab() {
             value={checkPwd}
             onChange={(e) => setCheckPwd(e.target.value)}
             placeholder="Введите свой пароль"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 pr-10 py-3 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#e91e8c]/60 transition"
+            className="w-full rounded-xl px-4 pr-10 py-3 text-sm placeholder:opacity-25 focus:outline-none transition"
+            style={{ background: input, border: inputBorder }}
           />
-          <button onClick={() => setShowCheck(!showCheck)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+          <button onClick={() => setShowCheck(!showCheck)} className="absolute right-3 top-1/2 -translate-y-1/2 opacity-30 hover:opacity-60">
             <Icon name={showCheck ? "EyeOff" : "Eye"} size={16} />
           </button>
         </div>
@@ -141,7 +153,7 @@ export default function SecurityTab() {
       </div>
 
       {/* Generator */}
-      <div className="bg-white/5 rounded-2xl p-4 space-y-4 border border-white/8">
+      <div className="rounded-2xl p-4 space-y-4" style={{ background: card, border: `1px solid ${border}` }}>
         <div className="flex items-center gap-2">
           <Icon name="Wand2" size={18} className="text-[#e91e8c]" />
           <p className="font-semibold">Генератор паролей</p>
@@ -211,13 +223,13 @@ export default function SecurityTab() {
       </div>
 
       {/* Мои пароли */}
-      <div className="rounded-2xl border border-white/8 overflow-hidden" style={{ background: 'hsl(220, 26%, 18%)' }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: card, border: `1px solid ${border}` }}>
         <div className="flex items-center justify-between px-4 py-3.5">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'hsla(328,80%,50%,0.18)' }}>
               <Icon name="Lock" size={18} style={{ color: '#e91e8c' }} />
             </div>
-            <span className="font-semibold text-white">Мои пароли</span>
+            <span className="font-semibold">Мои пароли</span>
           </div>
           <button
             onClick={openSaveForm}
@@ -280,28 +292,47 @@ export default function SecurityTab() {
           </div>
         ) : (
           saved.length > 0 && (
-            <div className="border-t border-white/8 divide-y divide-white/5">
-              {saved.map((p) => (
-                <div key={p.id} className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                    <Icon name="KeyRound" size={14} className="text-white/40" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">{p.label}</p>
-                    {p.login && <p className="text-xs text-white/40 truncate">{p.login}</p>}
-                    <p className="font-mono text-xs text-white/40 truncate">{p.hidden ? "••••••••••••" : p.password}</p>
-                  </div>
-                  <button onClick={() => toggleHidden(p.id)} className="text-white/30 hover:text-white/60 p-1">
-                    <Icon name={p.hidden ? "Eye" : "EyeOff"} size={15} />
-                  </button>
-                  <button onClick={() => handleCopy(p.password)} className="text-white/30 hover:text-white/60 p-1">
-                    <Icon name="Copy" size={15} />
-                  </button>
-                  <button onClick={() => removeSaved(p.id)} className="text-white/30 hover:text-red-400 p-1">
-                    <Icon name="Trash2" size={15} />
-                  </button>
+            <div style={{ borderTop: `1px solid ${border}` }}>
+              {/* Search */}
+              <div className="px-4 py-2.5" style={{ borderBottom: `1px solid ${border}` }}>
+                <div className="relative">
+                  <Icon name="Search" size={14} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
+                  <input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Поиск по паролям..."
+                    className="w-full rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-none transition"
+                    style={{ background: input, border: inputBorder }}
+                  />
                 </div>
-              ))}
+              </div>
+              <div style={{ divide: border }}>
+                {filteredSaved.length === 0 ? (
+                  <p className="text-xs opacity-30 text-center py-4">Ничего не найдено</p>
+                ) : (
+                  filteredSaved.map((p) => (
+                    <div key={p.id} className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${border}` }}>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: input }}>
+                        <Icon name="KeyRound" size={14} className="opacity-40" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">{p.label}</p>
+                        {p.login && <p className="text-xs opacity-40 truncate">{p.login}</p>}
+                        <p className="font-mono text-xs opacity-40 truncate">{p.hidden ? "••••••••••••" : p.password}</p>
+                      </div>
+                      <button onClick={() => toggleHidden(p.id)} className="opacity-30 hover:opacity-60 p-1">
+                        <Icon name={p.hidden ? "Eye" : "EyeOff"} size={15} />
+                      </button>
+                      <button onClick={() => handleCopy(p.password)} className="opacity-30 hover:opacity-60 p-1">
+                        <Icon name="Copy" size={15} />
+                      </button>
+                      <button onClick={() => removeSaved(p.id)} className="opacity-30 hover:text-red-400 p-1">
+                        <Icon name="Trash2" size={15} />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           )
         )}
