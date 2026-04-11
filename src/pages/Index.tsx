@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { QRCodeSVG } from "qrcode.react"
 import BottomNav from "@/components/BottomNav"
 import ScannerTab from "@/components/tabs/ScannerTab"
 import SecurityTab from "@/components/tabs/SecurityTab"
@@ -124,6 +125,19 @@ export default function Index() {
                 <Icon name="Smartphone" size={15} />
                 Android APK
               </a>
+              <div className="flex flex-col items-center gap-1 pt-1">
+                <p className="text-xs opacity-40 self-start px-1">QR-код для перехода</p>
+                <div className="rounded-xl overflow-hidden p-1.5" style={{ background: '#fff' }}>
+                  <QRCodeSVG
+                    value="https://preview--flash-innovation-lab.poehali.dev/"
+                    size={140}
+                    fgColor="#e91e8c"
+                    bgColor="#ffffff"
+                    level="M"
+                  />
+                </div>
+                <p className="text-[10px] opacity-30 text-center">Наведи камеру телефона</p>
+              </div>
             </div>
           )}
         </div>
