@@ -144,16 +144,25 @@ export default function Index() {
                   </div>
                 ))}
               </div>
-              <a
-                href="/cybershild.apk"
-                download="КиберЩит.apk"
-                onClick={() => setShowApkMenu(false)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
-                style={{ background: 'linear-gradient(135deg, #e91e8c, #c4177a)', color: '#fff' }}
+              <div
+                className="rounded-xl p-3 flex flex-col gap-2"
+                style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}
               >
-                <Icon name="Smartphone" size={15} />
-                Android APK
-              </a>
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🤖</span>
+                  <p className="text-xs font-semibold" style={{ color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)' }}>Android</p>
+                </div>
+                {[
+                  { icon: '1️⃣', text: 'Открой сайт в Chrome' },
+                  { icon: '2️⃣', text: 'Меню ⋮ → «Добавить на главный экран»' },
+                  { icon: '3️⃣', text: 'Нажми «Добавить» — готово!' },
+                ].map((step) => (
+                  <div key={step.icon} className="flex items-center gap-2">
+                    <span className="text-sm">{step.icon}</span>
+                    <p className="text-xs opacity-60">{step.text}</p>
+                  </div>
+                ))}
+              </div>
               <div className="flex flex-col items-center gap-1 pt-1">
                 <p className="text-xs opacity-40 self-start px-1">QR-код для перехода</p>
                 <div className="rounded-xl overflow-hidden p-1.5" style={{ background: '#fff' }}>
