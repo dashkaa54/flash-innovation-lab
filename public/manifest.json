@@ -9,7 +9,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn.poehali.dev/projects/c7ef9db5-76bb-4751-9d3d-f23fd3fea923/files/b593b225-3378-40ef-a9a4-5e4d3e47191a.jpg",
+      "src": "https://cdn.poehali.dev/projects/c7ef9db5-76bb-4751-9d3d-f23fd3fea923/bucket/26833219-c787-4ddc-b2b1-f1d10421805e.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn.poehali.dev/projects/c7ef9db5-76bb-4751-9d3d-f23fd3fea923/bucket/26833219-c787-4ddc-b2b1-f1d10421805e.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any maskable"
