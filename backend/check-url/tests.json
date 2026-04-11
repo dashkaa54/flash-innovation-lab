@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "Проверка ссылки (ключ может отсутствовать)",
+      "method": "POST",
+      "path": "/",
+      "body": {"url": "https://google.com"},
+      "expectedStatus": 503,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Пустой URL",
+      "method": "POST",
+      "path": "/",
+      "body": {"url": ""},
+      "expectedStatus": 400,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

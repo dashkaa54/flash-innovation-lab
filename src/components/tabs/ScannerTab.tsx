@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import Icon from "@/components/ui/icon"
 
+const CHECK_URL_API = "https://functions.poehali.dev/71cad6d1-6731-4b39-b53e-ec6cd87294c3"
+
 type ScanResult = "safe" | "danger" | "warning" | null
 
 interface HistoryItem {
@@ -93,26 +95,49 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history))
   }, [history])
 
-  const handleScan = () => {
+  const handleScan = async () => {
     if (!url.trim()) return
     setLoading(true)
     setShowReasons(false)
-    setTimeout(() => {
-      const analysis = analyzeUrl(url)
-      setResult(analysis.result)
-      setReasons(analysis.reasons)
-      const now = new Date()
-      setHistory((prev) => [
-        {
-          url: url.trim(),
-          result: analysis.result,
-          time: now.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-          date: now.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" }),
-        },
-        ...prev.slice(0, 19),
-      ])
-      setLoading(false)
-    }, 1200)
+
+    const localAnalysis = analyzeUrl(url)
+    let finalResult = localAnalysis.result
+    let finalReasons = localAnalysis.reasons
+
+    try {
+      const resp = await fetch(CHECK_URL_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      })
+      if (resp.ok) {
+        const data = await resp.json()
+        if (data.safe === false && data.threat) {
+          finalResult = "danger"
+          finalReasons = [`🛡 Google Safe Browsing: ${data.threat}`, ...localAnalysis.reasons]
+        } else if (data.safe === true && finalResult !== "danger") {
+          if (finalResult === "safe") {
+            finalReasons = ["✅ Проверено Google Safe Browsing — угроз не найдено", ...finalReasons]
+          }
+        }
+      }
+    } catch {
+      // нет сети — используем только локальный анализ
+    }
+
+    setResult(finalResult)
+    setReasons(finalReasons)
+    const now = new Date()
+    setHistory((prev) => [
+      {
+        url: url.trim(),
+        result: finalResult,
+        time: now.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
+        date: now.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" }),
+      },
+      ...prev.slice(0, 19),
+    ])
+    setLoading(false)
   }
 
   const clearHistory = () => {
