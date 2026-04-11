@@ -55,9 +55,9 @@ function analyzeUrl(url: string): { result: ScanResult; reasons: string[] } {
 }
 
 const resultConfig = {
-  safe: { bg: "bg-emerald-500/10 border-emerald-500/30", icon: "ShieldCheck", iconColor: "text-emerald-400", title: "Безопасно!", sub: "Можно переходить по ссылке" },
-  danger: { bg: "bg-red-500/10 border-red-500/30", icon: "ShieldX", iconColor: "text-red-400", title: "Опасно!", sub: "Это фишинговый / вредоносный сайт" },
-  warning: { bg: "bg-yellow-500/10 border-yellow-500/30", icon: "ShieldAlert", iconColor: "text-yellow-400", title: "Подозрительно", sub: "Будьте осторожны перед переходом" },
+  safe: { bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.3)", icon: "ShieldCheck", iconColor: "#10b981", title: "Безопасно!", sub: "Можно переходить по ссылке" },
+  danger: { bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.3)", icon: "ShieldX", iconColor: "#ef4444", title: "Опасно!", sub: "Это фишинговый / вредоносный сайт" },
+  warning: { bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.3)", icon: "ShieldAlert", iconColor: "#eab308", title: "Подозрительно", sub: "Будьте осторожны перед переходом" },
 }
 
 const STORAGE_KEY = "cybershield_scan_history"
@@ -70,24 +70,11 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
   const [loading, setLoading] = useState(false)
   const [shared, setShared] = useState(false)
 
-  const handleShare = (scanUrl: string, scanResult: ScanResult, scanReasons: string[]) => {
-    const label = scanResult === "safe" ? "✅ Безопасно" : scanResult === "danger" ? "🚨 Опасно" : "⚠️ Подозрительно"
-    const text = `КиберЩит проверил ссылку:\n${scanUrl}\n\nРезультат: ${label}\n${scanReasons.slice(0,2).join('\n')}`
-    if (navigator.share) {
-      navigator.share({ title: 'Результат проверки КиберЩит', text })
-    } else {
-      navigator.clipboard.writeText(text)
-      setShared(true)
-      setTimeout(() => setShared(false), 2000)
-    }
-  }
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
+    } catch { return [] }
   })
   const [showHistory, setShowHistory] = useState(false)
 
@@ -140,6 +127,18 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
     setLoading(false)
   }
 
+  const handleShare = (scanUrl: string, scanResult: ScanResult, scanReasons: string[]) => {
+    const label = scanResult === "safe" ? "✅ Безопасно" : scanResult === "danger" ? "🚨 Опасно" : "⚠️ Подозрительно"
+    const text = `КиберЩит проверил ссылку:\n${scanUrl}\n\nРезультат: ${label}\n${scanReasons.slice(0, 2).join('\n')}`
+    if (navigator.share) {
+      navigator.share({ title: 'Результат проверки КиберЩит', text })
+    } else {
+      navigator.clipboard.writeText(text)
+      setShared(true)
+      setTimeout(() => setShared(false), 2000)
+    }
+  }
+
   const clearHistory = () => {
     setHistory([])
     localStorage.removeItem(STORAGE_KEY)
@@ -147,17 +146,25 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
 
   const cfg = result ? resultConfig[result] : null
 
+  // Цвета по теме
+  const textMain = isDark ? '#f0f4ff' : '#0d1424'
+  const textMuted = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)'
+  const textLight = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.28)'
+  const inputBg = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'
+  const inputBorder = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)'
+  const historyItemBg = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'
+
   return (
     <div className="px-5 py-6 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Проверка ссылок</h1>
-          <p className="text-sm mt-1 opacity-50">Вставьте ссылку из SMS, почты или мессенджера</p>
+          <h1 className="text-2xl font-bold" style={{ color: textMain }}>Проверка ссылок</h1>
+          <p className="text-sm mt-1" style={{ color: textMuted }}>Вставьте ссылку из SMS, почты или мессенджера</p>
         </div>
         {history.length > 0 && (
           <button
             onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg mt-1"
+            className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg mt-1 font-semibold"
             style={{ background: 'hsla(328,80%,50%,0.12)', color: '#e91e8c' }}
           >
             <Icon name="History" size={13} />
@@ -169,19 +176,25 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
       {/* Input */}
       <div className="space-y-3">
         <div className="relative">
-          <Icon name="Link" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
+          <Icon name="Link" size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: textLight }} />
           <input
             value={url}
             onChange={(e) => { setUrl(e.target.value); setResult(null) }}
             onKeyDown={(e) => e.key === "Enter" && handleScan()}
             placeholder="https://example.com"
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-3.5 text-sm placeholder:opacity-25 focus:outline-none focus:border-[#e91e8c]/60 transition"
+            className="w-full rounded-xl pl-9 pr-4 py-3.5 text-sm focus:outline-none transition"
+            style={{
+              background: inputBg,
+              border: `1px solid ${inputBorder}`,
+              color: textMain,
+            }}
           />
         </div>
         <button
           onClick={handleScan}
           disabled={!url.trim() || loading}
-          className="w-full bg-[#e91e8c] hover:bg-[#c4177a] disabled:opacity-40 text-white font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
+          className="w-full disabled:opacity-40 text-white font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
+          style={{ background: '#e91e8c' }}
         >
           {loading ? (
             <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Анализирую...</>
@@ -193,18 +206,19 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
 
       {/* Result */}
       {cfg && result && (
-        <div className={`border rounded-2xl p-4 space-y-3 ${cfg.bg}`}>
+        <div className="rounded-2xl p-4 space-y-3" style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}>
           <div className="flex items-center gap-3">
-            <Icon name={cfg.icon} size={28} className={cfg.iconColor} fallback="Shield" />
+            <Icon name={cfg.icon} size={28} style={{ color: cfg.iconColor }} fallback="Shield" />
             <div>
-              <p className="font-bold text-base">{cfg.title}</p>
-              <p className="opacity-60 text-sm">{cfg.sub}</p>
+              <p className="font-bold text-base" style={{ color: textMain }}>{cfg.title}</p>
+              <p className="text-sm" style={{ color: textMuted }}>{cfg.sub}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowReasons(!showReasons)}
-              className="text-xs opacity-50 hover:opacity-80 transition flex items-center gap-1"
+              className="text-xs flex items-center gap-1 transition hover:opacity-80"
+              style={{ color: textMuted }}
             >
               <Icon name="Info" size={13} />
               Почему это {result === "safe" ? "безопасно" : "опасно"}?
@@ -212,7 +226,7 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
             </button>
             <button
               onClick={() => handleShare(url, result, reasons)}
-              className="ml-auto text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg transition"
+              className="ml-auto text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg transition font-semibold"
               style={{ background: 'rgba(233,30,140,0.12)', color: '#e91e8c' }}
             >
               <Icon name={shared ? "Check" : "Share2"} size={12} />
@@ -222,8 +236,13 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
           {showReasons && (
             <ul className="space-y-1.5">
               {reasons.map((r, i) => (
-                <li key={i} className="text-xs opacity-70 flex items-start gap-2">
-                  <Icon name={result === "safe" ? "Check" : "X"} size={12} className={result === "safe" ? "text-emerald-400 mt-0.5" : "text-red-400 mt-0.5"} />
+                <li key={i} className="text-xs flex items-start gap-2" style={{ color: textMuted }}>
+                  <Icon
+                    name={result === "safe" ? "Check" : "X"}
+                    size={12}
+                    className="mt-0.5 flex-shrink-0"
+                    style={{ color: result === "safe" ? "#10b981" : "#ef4444" }}
+                  />
                   {r}
                 </li>
               ))}
@@ -236,8 +255,12 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
       {showHistory && history.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider opacity-40">История проверок</p>
-            <button onClick={clearHistory} className="text-xs opacity-40 hover:text-red-400 hover:opacity-100 transition flex items-center gap-1">
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: textLight }}>История проверок</p>
+            <button
+              onClick={clearHistory}
+              className="text-xs flex items-center gap-1 transition hover:text-red-400"
+              style={{ color: textLight }}
+            >
               <Icon name="Trash2" size={12} />
               Очистить
             </button>
@@ -248,13 +271,13 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
               return (
                 <div
                   key={i}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 cursor-pointer transition"
-                  style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 cursor-pointer transition hover:opacity-80"
+                  style={{ background: historyItemBg }}
                   onClick={() => { setUrl(item.url); setResult(null) }}
                 >
-                  <Icon name={c.icon} size={16} className={c.iconColor} fallback="Shield" />
-                  <p className="text-sm opacity-70 flex-1 truncate">{item.url}</p>
-                  <span className="text-xs opacity-30 shrink-0">{item.date} {item.time}</span>
+                  <Icon name={c.icon} size={16} style={{ color: c.iconColor }} fallback="Shield" />
+                  <p className="text-sm flex-1 truncate" style={{ color: textMuted }}>{item.url}</p>
+                  <span className="text-xs shrink-0" style={{ color: textLight }}>{item.date} {item.time}</span>
                 </div>
               )
             })}
