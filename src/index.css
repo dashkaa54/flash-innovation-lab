@@ -81,3 +81,79 @@
     border-radius: 2px;
   }
 }
+
+/* Светлая тема — глобальные улучшения */
+[data-theme="light"] body {
+  background: #f0f4ff;
+  color: #0d1424;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] textarea {
+  color: #0d1424;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus {
+  outline: none;
+  border-color: rgba(233, 30, 140, 0.5);
+}
+
+/* Карточки в светлой теме */
+[data-theme="light"] .bg-white\/5 {
+  background: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+}
+
+[data-theme="light"] .border-white\/8 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .text-white\/50 {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-theme="light"] .text-white\/70 {
+  color: rgba(0, 0, 0, 0.65) !important;
+}
+
+[data-theme="light"] .text-white\/40 {
+  color: rgba(0, 0, 0, 0.38) !important;
+}
+
+[data-theme="light"] .text-white\/30 {
+  color: rgba(0, 0, 0, 0.28) !important;
+}
+
+[data-theme="light"] .bg-white\/8 {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .bg-white\/10 {
+  background: rgba(0, 0, 0, 0.07) !important;
+}
+
+[data-theme="light"] .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Текст в светлой теме */
+[data-theme="light"] .text-white {
+  color: #0d1424 !important;
+}
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3 {
+  color: #0d1424;
+}

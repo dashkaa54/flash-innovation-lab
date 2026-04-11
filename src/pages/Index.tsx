@@ -6,10 +6,12 @@ import SecurityTab from "@/components/tabs/SecurityTab"
 import KnowledgeTab from "@/components/tabs/KnowledgeTab"
 import ChecklistTab from "@/components/tabs/ChecklistTab"
 import SOSTab from "@/components/tabs/SOSTab"
+import QuizTab from "@/components/tabs/QuizTab"
+import SettingsTab from "@/components/tabs/SettingsTab"
 import Icon from "@/components/ui/icon"
 import { useTheme } from "@/hooks/useTheme"
 
-type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos'
+type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos' | 'quiz' | 'settings'
 
 const darkBg = '#0d1424'
 const lightBg = '#f0f4ff'
@@ -24,6 +26,18 @@ export default function Index() {
   const { theme, toggle } = useTheme()
   const isDark = theme === 'dark'
 
+  const [elderMode, setElderMode] = useState(() => {
+    try { return localStorage.getItem('cybershield_elder') === '1' } catch { return false }
+  })
+
+  const toggleElderMode = () => {
+    setElderMode(v => {
+      const next = !v
+      localStorage.setItem('cybershield_elder', next ? '1' : '0')
+      return next
+    })
+  }
+
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showBanner, setShowBanner] = useState(false)
   const [installed, setInstalled] = useState(false)
@@ -35,15 +49,12 @@ export default function Index() {
   const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent)
 
   useEffect(() => {
-    // Проверяем — уже установлено?
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
     if (isStandalone) { setInstalled(true); return }
 
-    // Уже закрывали баннер?
     const dismissed = localStorage.getItem('pwa_banner_dismissed')
     if (dismissed) return
 
-    // iOS Safari — показываем свою подсказку
     if (isIos && isSafari) {
       setTimeout(() => setShowIosBanner(true), 1500)
       return
@@ -71,6 +82,8 @@ export default function Index() {
     localStorage.setItem('pwa_banner_dismissed', '1')
   }
 
+  const tabProps = { isDark, elderMode }
+
   return (
     <div
       data-theme={theme}
@@ -86,19 +99,6 @@ export default function Index() {
         transition: 'background 0.3s, color 0.3s',
       }}
     >
-      {/* Theme toggle */}
-      <button
-        onClick={toggle}
-        className="fixed top-4 z-50 w-9 h-9 rounded-full flex items-center justify-center transition-all"
-        style={{
-          background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-          color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-          right: 'min(calc(50% - 215px + 16px), calc(100% - 52px))',
-        }}
-      >
-        <Icon name={isDark ? "Sun" : "Moon"} size={18} />
-      </button>
-
       {/* APK download button */}
       {!installed && (
         <div
@@ -126,7 +126,6 @@ export default function Index() {
               }}
             >
               <p className="text-xs font-semibold opacity-50 px-1">Скачать приложение</p>
-              {/* iOS инструкция */}
               <div
                 className="rounded-xl p-3 flex flex-col gap-2"
                 style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}
@@ -223,7 +222,6 @@ export default function Index() {
                 </div>
               ))}
             </div>
-            {/* Стрелка вниз */}
             <div
               className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 rotate-45"
               style={{
@@ -241,10 +239,7 @@ export default function Index() {
       {showBanner && !installed && (
         <div
           className="fixed top-0 left-1/2 z-50 w-full transition-all duration-300"
-          style={{
-            maxWidth: 430,
-            transform: 'translateX(-50%)',
-          }}
+          style={{ maxWidth: 430, transform: 'translateX(-50%)' }}
         >
           <div
             className="mx-3 mt-3 rounded-2xl p-4 flex items-center gap-3 shadow-2xl"
@@ -303,11 +298,21 @@ export default function Index() {
           transition: 'padding-top 0.3s',
         }}
       >
-        {activeTab === 'scanner' && <ScannerTab isDark={isDark} />}
-        {activeTab === 'security' && <SecurityTab isDark={isDark} />}
-        {activeTab === 'knowledge' && <KnowledgeTab isDark={isDark} />}
-        {activeTab === 'checklist' && <ChecklistTab isDark={isDark} />}
-        {activeTab === 'sos' && <SOSTab isDark={isDark} />}
+        {activeTab === 'scanner' && <ScannerTab {...tabProps} />}
+        {activeTab === 'security' && <SecurityTab {...tabProps} />}
+        {activeTab === 'knowledge' && <KnowledgeTab {...tabProps} />}
+        {activeTab === 'checklist' && <ChecklistTab {...tabProps} />}
+        {activeTab === 'sos' && <SOSTab {...tabProps} />}
+        {activeTab === 'quiz' && <QuizTab {...tabProps} />}
+        {activeTab === 'settings' && (
+          <SettingsTab
+            {...tabProps}
+            theme={theme}
+            onToggleTheme={toggle}
+            elderMode={elderMode}
+            onToggleElderMode={toggleElderMode}
+          />
+        )}
       </main>
       <BottomNav active={activeTab} onChange={setActiveTab} isDark={isDark} />
     </div>
