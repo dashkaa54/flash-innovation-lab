@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import Icon from "@/components/ui/icon"
+import QuizTab from "@/components/tabs/QuizTab"
 
 const initialTasks = [
   { id: 1, text: "Создать сложный пароль для почты", detail: "Минимум 12 символов с цифрами и спецсимволами. Почта — ключ ко всем аккаунтам.", icon: "Mail" },
@@ -130,6 +131,15 @@ export default function ChecklistTab({ isDark = true, elderMode = false }: { isD
           <p className={fsXs} style={{ color: textMuted }}>Ваша цифровая безопасность на высшем уровне</p>
         </div>
       )}
+
+      {/* Разделитель */}
+      <div className="flex items-center gap-3 py-2">
+        <div className="flex-1 h-px" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }} />
+        <p className={`${fsXs} font-semibold uppercase tracking-wider`} style={{ color: isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)' }}>Проверь себя</p>
+        <div className="flex-1 h-px" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }} />
+      </div>
+
+      <QuizTab isDark={isDark} elderMode={elderMode} />
     </div>
   )
 }

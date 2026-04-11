@@ -1,6 +1,6 @@
 import Icon from '@/components/ui/icon';
 
-type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos' | 'quiz' | 'settings';
+type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos' | 'settings';
 
 interface BottomNavProps {
   active: Tab;
@@ -13,7 +13,6 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'security', label: 'Пароли', icon: 'Lock' },
   { id: 'knowledge', label: 'Знания', icon: 'BookOpen' },
   { id: 'checklist', label: 'Чек-лист', icon: 'CheckCircle' },
-  { id: 'quiz', label: 'Тест', icon: 'HelpCircle' },
   { id: 'sos', label: 'SOS', icon: 'Siren' },
   { id: 'settings', label: 'Настройки', icon: 'Settings' },
 ];

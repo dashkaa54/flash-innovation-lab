@@ -6,12 +6,11 @@ import SecurityTab from "@/components/tabs/SecurityTab"
 import KnowledgeTab from "@/components/tabs/KnowledgeTab"
 import ChecklistTab from "@/components/tabs/ChecklistTab"
 import SOSTab from "@/components/tabs/SOSTab"
-import QuizTab from "@/components/tabs/QuizTab"
 import SettingsTab from "@/components/tabs/SettingsTab"
 import Icon from "@/components/ui/icon"
 import { useTheme } from "@/hooks/useTheme"
 
-type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos' | 'quiz' | 'settings'
+type Tab = 'scanner' | 'security' | 'knowledge' | 'checklist' | 'sos' | 'settings'
 
 const darkBg = '#0d1424'
 const lightBg = '#f0f4ff'
@@ -303,7 +302,6 @@ export default function Index() {
         {activeTab === 'knowledge' && <KnowledgeTab {...tabProps} />}
         {activeTab === 'checklist' && <ChecklistTab {...tabProps} />}
         {activeTab === 'sos' && <SOSTab {...tabProps} />}
-        {activeTab === 'quiz' && <QuizTab {...tabProps} />}
         {activeTab === 'settings' && (
           <SettingsTab
             {...tabProps}
