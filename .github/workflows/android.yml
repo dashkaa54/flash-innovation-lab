@@ -3,6 +3,8 @@ name: Build Android APK
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'public/cybershild.apk'
   workflow_dispatch:
 
 jobs:
@@ -12,8 +14,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Java 21
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -22,10 +26,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '21'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: Install Capacitor CLI globally
+        run: npm install -g @capacitor/cli
 
       - name: Build web app
         run: npm run build
@@ -36,8 +43,31 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Set app icon
+        run: |
+          curl -L "https://cdn.poehali.dev/projects/c7ef9db5-76bb-4751-9d3d-f23fd3fea923/bucket/26833219-c787-4ddc-b2b1-f1d10421805e.jpg" -o /tmp/icon.jpg
+          pip install -q Pillow
+          python3 - <<'EOF'
+          from PIL import Image
+          import os
+          img = Image.open('/tmp/icon.jpg').convert('RGBA')
+          sizes = {'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
+          base = 'android/app/src/main/res'
+          for folder, size in sizes.items():
+            path = os.path.join(base, folder)
+            os.makedirs(path, exist_ok=True)
+            r = img.resize((size, size), Image.LANCZOS)
+            r.save(os.path.join(path, 'ic_launcher.png'))
+            r.save(os.path.join(path, 'ic_launcher_round.png'))
+          print('Icons applied')
+          EOF
+          find android/app/src/main/res -name 'ic_launcher*.xml' -delete || true
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Accept SDK licenses
+        run: yes | sdkmanager --licenses || true
 
       - name: Grant gradlew permissions
         run: chmod +x android/gradlew
@@ -46,9 +76,18 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK
+      - name: Commit APK to repo
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk public/cybershild.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/cybershild.apk
+          git diff --staged --quiet || git commit -m "chore: update APK [skip ci]"
+          git push
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: KiberShield-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: KiberShield-APK
+          path: public/cybershild.apk
           retention-days: 30
