@@ -147,7 +147,7 @@ export default function Index() {
                 ))}
               </div>
               <a
-                href="/cybershield.apk"
+                href="/cybershild.apk"
                 download="КиберЩит.apk"
                 onClick={() => setShowApkMenu(false)}
                 className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
@@ -273,7 +273,7 @@ export default function Index() {
                 Установить
               </button>
               <a
-                href="/cybershield.apk"
+                href="/cybershild.apk"
                 download="КиберЩит.apk"
                 className="text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1 transition-all"
                 style={{ background: 'rgba(233,30,140,0.18)', border: '1px solid rgba(233,30,140,0.4)' }}
