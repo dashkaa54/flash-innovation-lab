@@ -130,7 +130,7 @@ export default function Index() {
                 <p className="text-xs opacity-40 self-start px-1">QR-код для перехода</p>
                 <div className="rounded-xl overflow-hidden p-1.5" style={{ background: '#fff' }}>
                   <QRCodeSVG
-                    value="https://preview--flash-innovation-lab.poehali.dev/"
+                    value={window.location.origin + '/'}
                     size={140}
                     fgColor="#e91e8c"
                     bgColor="#ffffff"
@@ -141,9 +141,9 @@ export default function Index() {
                 <button
                   onClick={() => {
                     if (navigator.share) {
-                      navigator.share({ title: 'КиберЩит', url: 'https://preview--flash-innovation-lab.poehali.dev/' })
+                      navigator.share({ title: 'КиберЩит', url: window.location.origin + '/' })
                     } else {
-                      navigator.clipboard.writeText('https://preview--flash-innovation-lab.poehali.dev/')
+                      navigator.clipboard.writeText(window.location.origin + '/')
                       setCopied(true)
                       setTimeout(() => setCopied(false), 2000)
                     }
