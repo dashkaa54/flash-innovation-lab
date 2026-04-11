@@ -116,6 +116,26 @@ export default function Index() {
               }}
             >
               <p className="text-xs font-semibold opacity-50 px-1">Скачать приложение</p>
+              {/* iOS инструкция */}
+              <div
+                className="rounded-xl p-3 flex flex-col gap-2"
+                style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🍎</span>
+                  <p className="text-xs font-semibold" style={{ color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)' }}>iPhone / iPad</p>
+                </div>
+                {[
+                  { icon: '1️⃣', text: 'Открой сайт в Safari' },
+                  { icon: '2️⃣', text: 'Нажми кнопку «Поделиться» ↑' },
+                  { icon: '3️⃣', text: '«На экран «Домой»»' },
+                ].map((step) => (
+                  <div key={step.icon} className="flex items-center gap-2">
+                    <span className="text-sm">{step.icon}</span>
+                    <p className="text-xs opacity-60">{step.text}</p>
+                  </div>
+                ))}
+              </div>
               <a
                 href="/cybershield.apk"
                 download="КиберЩит.apk"
