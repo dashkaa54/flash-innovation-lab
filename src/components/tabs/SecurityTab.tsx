@@ -1,5 +1,17 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Icon from "@/components/ui/icon"
+
+const MASTER_KEY = "cybershield_master_hash"
+const VAULT_KEY = "cybershield_vault"
+
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i)
+    hash |= 0
+  }
+  return hash.toString(36)
+}
 
 function getPasswordStrength(pwd: string): { level: 0 | 1 | 2 | 3; label: string; color: string; tips: string[] } {
   if (!pwd) return { level: 0, label: "", color: "", tips: [] }
@@ -48,12 +60,58 @@ export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
   const [generated, setGenerated] = useState("")
   const [copied, setCopied] = useState(false)
 
+  // Мастер-пароль
+  const hasMaster = !!localStorage.getItem(MASTER_KEY)
+  const [masterUnlocked, setMasterUnlocked] = useState(false)
+  const [masterInput, setMasterInput] = useState("")
+  const [masterSetup, setMasterSetup] = useState(false)
+  const [masterConfirm, setMasterConfirm] = useState("")
+  const [masterError, setMasterError] = useState("")
+  const [showMasterInput, setShowMasterInput] = useState(false)
+
   const [saved, setSaved] = useState<SavedPassword[]>([])
   const [saveLabel, setSaveLabel] = useState("")
   const [saveLogin, setSaveLogin] = useState("")
   const [savePassword, setSavePassword] = useState("")
   const [showSaveForm, setShowSaveForm] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+
+  useEffect(() => {
+    if (masterUnlocked) {
+      try {
+        const raw = localStorage.getItem(VAULT_KEY)
+        if (raw) setSaved(JSON.parse(raw))
+      } catch { setSaved([]) }
+    }
+  }, [masterUnlocked])
+
+  useEffect(() => {
+    if (masterUnlocked) {
+      localStorage.setItem(VAULT_KEY, JSON.stringify(saved))
+    }
+  }, [saved, masterUnlocked])
+
+  const handleUnlock = () => {
+    const stored = localStorage.getItem(MASTER_KEY)
+    if (stored === simpleHash(masterInput)) {
+      setMasterUnlocked(true)
+      setMasterError("")
+      setMasterInput("")
+    } else {
+      setMasterError("Неверный мастер-пароль")
+    }
+  }
+
+  const handleSetMaster = () => {
+    if (masterInput.length < 4) { setMasterError("Минимум 4 символа"); return }
+    if (masterInput !== masterConfirm) { setMasterError("Пароли не совпадают"); return }
+    localStorage.setItem(MASTER_KEY, simpleHash(masterInput))
+    setMasterUnlocked(true)
+    setMasterSetup(false)
+    setMasterInput("")
+    setMasterConfirm("")
+    setMasterError("")
+  }
 
   const card = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'
   const border = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'
@@ -231,16 +289,89 @@ export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
             </div>
             <span className="font-semibold">Мои пароли</span>
           </div>
-          <button
-            onClick={openSaveForm}
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
-            style={{ background: 'hsla(328,80%,50%,0.18)', color: '#e91e8c' }}
-          >
-            <Icon name="Plus" size={18} />
-          </button>
+          {masterUnlocked && (
+            <button
+              onClick={openSaveForm}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+              style={{ background: 'hsla(328,80%,50%,0.18)', color: '#e91e8c' }}
+            >
+              <Icon name="Plus" size={18} />
+            </button>
+          )}
         </div>
 
-        {showSaveForm && (
+        {/* Экран мастер-пароля */}
+        {!masterUnlocked && (
+          <div className="px-4 pb-5 pt-2 flex flex-col items-center gap-4 border-t border-white/8">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(233,30,140,0.1)' }}>
+              <Icon name="ShieldCheck" size={26} style={{ color: '#e91e8c' }} />
+            </div>
+            {!hasMaster || masterSetup ? (
+              <>
+                <div className="text-center">
+                  <p className="font-semibold text-sm">Создайте мастер-пароль</p>
+                  <p className="text-xs opacity-40 mt-1">Он защитит все ваши пароли</p>
+                </div>
+                <div className="w-full space-y-2">
+                  <input
+                    type="password"
+                    value={masterInput}
+                    onChange={(e) => { setMasterInput(e.target.value); setMasterError("") }}
+                    placeholder="Придумайте мастер-пароль"
+                    className="w-full rounded-xl px-4 py-3 text-sm placeholder:opacity-30 focus:outline-none transition"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  />
+                  <input
+                    type="password"
+                    value={masterConfirm}
+                    onChange={(e) => { setMasterConfirm(e.target.value); setMasterError("") }}
+                    placeholder="Повторите пароль"
+                    onKeyDown={(e) => e.key === "Enter" && handleSetMaster()}
+                    className="w-full rounded-xl px-4 py-3 text-sm placeholder:opacity-30 focus:outline-none transition"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  />
+                  {masterError && <p className="text-xs text-red-400">{masterError}</p>}
+                  <button
+                    onClick={handleSetMaster}
+                    className="w-full text-white text-sm py-3 rounded-xl font-semibold transition"
+                    style={{ background: '#e91e8c' }}
+                  >
+                    Создать и войти
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-center">
+                  <p className="font-semibold text-sm">Введите мастер-пароль</p>
+                  <p className="text-xs opacity-40 mt-1">Для доступа к хранилищу</p>
+                </div>
+                <div className="w-full space-y-2">
+                  <input
+                    type="password"
+                    value={masterInput}
+                    onChange={(e) => { setMasterInput(e.target.value); setMasterError("") }}
+                    placeholder="Мастер-пароль"
+                    onKeyDown={(e) => e.key === "Enter" && handleUnlock()}
+                    className="w-full rounded-xl px-4 py-3 text-sm placeholder:opacity-30 focus:outline-none transition"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  />
+                  {masterError && <p className="text-xs text-red-400">{masterError}</p>}
+                  <button
+                    onClick={handleUnlock}
+                    className="w-full text-white text-sm py-3 rounded-xl font-semibold transition"
+                    style={{ background: '#e91e8c' }}
+                  >
+                    Открыть хранилище
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+
+        {masterUnlocked && showSaveForm && (
           <div className="px-4 pb-4 space-y-3 border-t border-white/8 pt-4">
             <p className="font-semibold text-white text-sm">Добавить новый пароль</p>
             <input
@@ -283,7 +414,7 @@ export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
           </div>
         )}
 
-        {saved.length === 0 && !showSaveForm ? (
+        {masterUnlocked && saved.length === 0 && !showSaveForm ? (
           <div className="flex flex-col items-center justify-center py-10 gap-3 border-t border-white/8">
             <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.05)' }}>
               <Icon name="Lock" size={26} className="text-white/20" />
@@ -291,7 +422,7 @@ export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
             <p className="text-sm text-white/30">Здесь будут сохранённые пароли</p>
           </div>
         ) : (
-          saved.length > 0 && (
+          masterUnlocked && saved.length > 0 && (
             <div style={{ borderTop: `1px solid ${border}` }}>
               {/* Search */}
               <div className="px-4 py-2.5" style={{ borderBottom: `1px solid ${border}` }}>

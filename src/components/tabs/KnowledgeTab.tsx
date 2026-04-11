@@ -187,8 +187,20 @@ type Article = (typeof categories)[0]["articles"][0]
 export default function KnowledgeTab({ isDark = true }: { isDark?: boolean }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeArticle, setActiveArticle] = useState<Article | null>(null)
+  const [search, setSearch] = useState("")
 
   const category = categories.find((c) => c.id === activeCategory)
+
+  const searchResults = search.trim().length > 1
+    ? categories.flatMap((cat) =>
+        cat.articles
+          .filter((a) =>
+            a.title.toLowerCase().includes(search.toLowerCase()) ||
+            a.preview.toLowerCase().includes(search.toLowerCase())
+          )
+          .map((a) => ({ ...a, catLabel: cat.label, catColor: cat.color, catBg: cat.bg, catIcon: cat.icon }))
+      )
+    : []
 
   if (activeArticle) {
     return (
@@ -246,18 +258,53 @@ export default function KnowledgeTab({ isDark = true }: { isDark?: boolean }) {
         <h1 className="text-2xl font-bold">База знаний</h1>
         <p className="text-white/50 text-sm mt-1">Короткие статьи о кибербезопасности</p>
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        {categories.map((cat) => (
-          <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
-            className="bg-white/5 border border-white/8 rounded-2xl p-4 text-left hover:bg-white/8 transition space-y-2">
-            <div className={`w-9 h-9 ${cat.bg} rounded-xl flex items-center justify-center`}>
-              <Icon name={cat.icon} size={18} className={cat.color} fallback="BookOpen" />
-            </div>
-            <p className="font-semibold text-sm">{cat.label}</p>
-            <p className="text-white/40 text-xs">{cat.articles.length} {cat.articles.length === 1 ? "статья" : "статьи"}</p>
+
+      {/* Search */}
+      <div className="relative">
+        <Icon name="Search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Поиск по статьям..."
+          className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-sm placeholder:opacity-25 focus:outline-none focus:border-[#e91e8c]/60 transition"
+        />
+        {search && (
+          <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 opacity-30 hover:opacity-60">
+            <Icon name="X" size={14} />
           </button>
-        ))}
+        )}
       </div>
+
+      {/* Search results */}
+      {search.trim().length > 1 ? (
+        <div className="space-y-2">
+          {searchResults.length === 0 ? (
+            <p className="text-sm text-white/40 text-center py-6">Ничего не найдено</p>
+          ) : (
+            searchResults.map((a, i) => (
+              <button key={i} onClick={() => { setActiveArticle(a); setSearch("") }}
+                className="w-full bg-white/5 border border-white/8 rounded-2xl p-4 text-left hover:bg-white/8 transition">
+                <p className="text-[10px] opacity-40 mb-1">{a.catLabel}</p>
+                <p className="font-semibold text-sm">{a.title}</p>
+                <p className="text-white/50 text-xs mt-1">{a.preview}</p>
+              </button>
+            ))
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          {categories.map((cat) => (
+            <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
+              className="bg-white/5 border border-white/8 rounded-2xl p-4 text-left hover:bg-white/8 transition space-y-2">
+              <div className={`w-9 h-9 ${cat.bg} rounded-xl flex items-center justify-center`}>
+                <Icon name={cat.icon} size={18} className={cat.color} fallback="BookOpen" />
+              </div>
+              <p className="font-semibold text-sm">{cat.label}</p>
+              <p className="text-white/40 text-xs">{cat.articles.length} {cat.articles.length === 1 ? "статья" : "статьи"}</p>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

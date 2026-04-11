@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Icon from "@/components/ui/icon"
 
 const initialTasks = [
@@ -11,9 +11,20 @@ const initialTasks = [
   { id: 7, text: "Проверить список приложений с доступом к геолокации", detail: "Оставьте только те, которым действительно нужен доступ", icon: "MapPin" },
 ]
 
+const CHECKLIST_KEY = "cybershield_checklist"
+
 export default function ChecklistTab({ isDark = true }: { isDark?: boolean }) {
-  const [checked, setChecked] = useState<Set<number>>(new Set())
+  const [checked, setChecked] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem(CHECKLIST_KEY)
+      return saved ? new Set<number>(JSON.parse(saved)) : new Set<number>()
+    } catch { return new Set<number>() }
+  })
   const [expanded, setExpanded] = useState<number | null>(null)
+
+  useEffect(() => {
+    localStorage.setItem(CHECKLIST_KEY, JSON.stringify([...checked]))
+  }, [checked])
 
   const toggle = (id: number) => {
     setChecked((prev) => {

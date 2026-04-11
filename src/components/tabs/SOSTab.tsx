@@ -86,10 +86,13 @@ export default function SOSTab({ isDark = true }: { isDark?: boolean }) {
               <p className="text-sm font-medium">{c.name}</p>
               <p className="text-xs text-white/40">{c.desc}</p>
             </div>
-            <div className="flex items-center gap-1 text-[#e91e8c]">
-              <Icon name="Phone" size={14} />
-              <span className="text-sm font-mono">{c.number}</span>
-            </div>
+            <div
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold"
+            style={{ background: 'rgba(233,30,140,0.15)', color: '#e91e8c' }}
+          >
+            <Icon name="Phone" size={13} />
+            Позвонить
+          </div>
           </a>
         ))}
       </div>

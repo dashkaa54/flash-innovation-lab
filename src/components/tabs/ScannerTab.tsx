@@ -66,6 +66,19 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
   const [reasons, setReasons] = useState<string[]>([])
   const [showReasons, setShowReasons] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [shared, setShared] = useState(false)
+
+  const handleShare = (scanUrl: string, scanResult: ScanResult, scanReasons: string[]) => {
+    const label = scanResult === "safe" ? "✅ Безопасно" : scanResult === "danger" ? "🚨 Опасно" : "⚠️ Подозрительно"
+    const text = `КиберЩит проверил ссылку:\n${scanUrl}\n\nРезультат: ${label}\n${scanReasons.slice(0,2).join('\n')}`
+    if (navigator.share) {
+      navigator.share({ title: 'Результат проверки КиберЩит', text })
+    } else {
+      navigator.clipboard.writeText(text)
+      setShared(true)
+      setTimeout(() => setShared(false), 2000)
+    }
+  }
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -163,14 +176,24 @@ export default function ScannerTab({ isDark = true }: { isDark?: boolean }) {
               <p className="opacity-60 text-sm">{cfg.sub}</p>
             </div>
           </div>
-          <button
-            onClick={() => setShowReasons(!showReasons)}
-            className="text-xs opacity-50 hover:opacity-80 transition flex items-center gap-1"
-          >
-            <Icon name="Info" size={13} />
-            Почему это {result === "safe" ? "безопасно" : "опасно"}?
-            <Icon name={showReasons ? "ChevronUp" : "ChevronDown"} size={13} />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowReasons(!showReasons)}
+              className="text-xs opacity-50 hover:opacity-80 transition flex items-center gap-1"
+            >
+              <Icon name="Info" size={13} />
+              Почему это {result === "safe" ? "безопасно" : "опасно"}?
+              <Icon name={showReasons ? "ChevronUp" : "ChevronDown"} size={13} />
+            </button>
+            <button
+              onClick={() => handleShare(url, result, reasons)}
+              className="ml-auto text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg transition"
+              style={{ background: 'rgba(233,30,140,0.12)', color: '#e91e8c' }}
+            >
+              <Icon name={shared ? "Check" : "Share2"} size={12} />
+              {shared ? "Скопировано" : "Поделиться"}
+            </button>
+          </div>
           {showReasons && (
             <ul className="space-y-1.5">
               {reasons.map((r, i) => (
