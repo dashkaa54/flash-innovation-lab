@@ -26,6 +26,7 @@ export default function Index() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showBanner, setShowBanner] = useState(false)
   const [installed, setInstalled] = useState(false)
+  const [showApkMenu, setShowApkMenu] = useState(false)
 
   useEffect(() => {
     // Проверяем — уже установлено?
@@ -85,6 +86,48 @@ export default function Index() {
       >
         <Icon name={isDark ? "Sun" : "Moon"} size={18} />
       </button>
+
+      {/* APK download button */}
+      {!installed && (
+        <div
+          className="fixed top-4 z-50"
+          style={{ left: 'min(calc(50% - 215px + 16px), 16px)' }}
+        >
+          <button
+            onClick={() => setShowApkMenu(v => !v)}
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
+            style={{
+              background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+              color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+            }}
+            title="Скачать приложение"
+          >
+            <Icon name="Download" size={18} />
+          </button>
+          {showApkMenu && (
+            <div
+              className="absolute top-11 left-0 rounded-2xl p-3 flex flex-col gap-2 shadow-2xl min-w-[180px]"
+              style={{
+                background: isDark ? '#1a2035' : '#ffffff',
+                border: '1px solid rgba(233,30,140,0.25)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+              }}
+            >
+              <p className="text-xs font-semibold opacity-50 px-1">Скачать приложение</p>
+              <a
+                href="/cybershield.apk"
+                download="КиберЩит.apk"
+                onClick={() => setShowApkMenu(false)}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
+                style={{ background: 'linear-gradient(135deg, #e91e8c, #c4177a)', color: '#fff' }}
+              >
+                <Icon name="Smartphone" size={15} />
+                Android APK
+              </a>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* PWA Install Banner */}
       {showBanner && !installed && (
