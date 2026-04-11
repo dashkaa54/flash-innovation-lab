@@ -25,16 +25,10 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Install Capacitor
-        run: npm install @capacitor/core @capacitor/cli @capacitor/android
+        run: npm install --legacy-peer-deps
 
       - name: Build web app
         run: npm run build
-
-      - name: Init Capacitor
-        run: npx cap init "КиберЩит" "ru.kibershield.app" --web-dir dist || true
 
       - name: Add Android platform
         run: npx cap add android || true
