@@ -86,6 +86,25 @@ export default function Index() {
         <Icon name={isDark ? "Sun" : "Moon"} size={18} />
       </button>
 
+      {/* APK Download Button (fixed, always visible) */}
+      {!installed && (
+        <a
+          href="/cybershield.apk"
+          download="КиберЩит.apk"
+          className="fixed z-50 flex items-center gap-2 px-3 py-2 rounded-xl text-white text-xs font-semibold shadow-lg transition-all hover:scale-105 active:scale-95"
+          style={{
+            background: 'linear-gradient(135deg, #e91e8c, #c4177a)',
+            boxShadow: '0 4px 16px rgba(233,30,140,0.35)',
+            top: '12px',
+            left: 'min(calc(50% - 215px + 16px), 16px)',
+          }}
+          title="Скачать APK для Android"
+        >
+          <Icon name="Download" size={15} className="text-white" />
+          <span>APK</span>
+        </a>
+      )}
+
       {/* PWA Install Banner */}
       {showBanner && !installed && (
         <div
@@ -121,6 +140,16 @@ export default function Index() {
               >
                 Установить
               </button>
+              <a
+                href="/cybershield.apk"
+                download="КиберЩит.apk"
+                className="text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1 transition-all"
+                style={{ background: 'rgba(233,30,140,0.18)', border: '1px solid rgba(233,30,140,0.4)' }}
+                title="Скачать APK"
+              >
+                <Icon name="Download" size={13} />
+                APK
+              </a>
               <button
                 onClick={handleDismiss}
                 className="w-8 h-8 rounded-xl flex items-center justify-center opacity-30 hover:opacity-60 transition-all"
