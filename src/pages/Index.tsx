@@ -29,6 +29,10 @@ export default function Index() {
   const [installed, setInstalled] = useState(false)
   const [showApkMenu, setShowApkMenu] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showIosBanner, setShowIosBanner] = useState(false)
+
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent)
+  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent)
 
   useEffect(() => {
     // Проверяем — уже установлено?
@@ -38,6 +42,12 @@ export default function Index() {
     // Уже закрывали баннер?
     const dismissed = localStorage.getItem('pwa_banner_dismissed')
     if (dismissed) return
+
+    // iOS Safari — показываем свою подсказку
+    if (isIos && isSafari) {
+      setTimeout(() => setShowIosBanner(true), 1500)
+      return
+    }
 
     const handler = (e: Event) => {
       e.preventDefault()
@@ -177,6 +187,53 @@ export default function Index() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* iOS Safari Install Banner */}
+      {showIosBanner && !installed && (
+        <div
+          className="fixed bottom-20 left-1/2 z-50 w-full transition-all duration-500"
+          style={{ maxWidth: 430, transform: 'translateX(-50%)' }}
+        >
+          <div
+            className="mx-3 rounded-2xl p-4 shadow-2xl relative"
+            style={{
+              background: isDark ? '#1a2035' : '#ffffff',
+              border: '1px solid rgba(233,30,140,0.3)',
+              boxShadow: '0 8px 32px rgba(233,30,140,0.2)',
+            }}
+          >
+            <button
+              onClick={() => { setShowIosBanner(false); localStorage.setItem('pwa_banner_dismissed', '1') }}
+              className="absolute top-3 right-3 opacity-40 hover:opacity-70 transition-opacity"
+            >
+              <Icon name="X" size={16} />
+            </button>
+            <p className="text-sm font-bold mb-3" style={{ color: '#e91e8c' }}>Установи как приложение 🍎</p>
+            <div className="flex flex-col gap-2">
+              {[
+                { icon: '1️⃣', text: 'Нажми кнопку «Поделиться» внизу Safari ↓' },
+                { icon: '2️⃣', text: 'Прокрути вниз и выбери «На экран «Домой»»' },
+                { icon: '3️⃣', text: 'Нажми «Добавить» — готово!' },
+              ].map((step) => (
+                <div key={step.icon} className="flex items-start gap-2">
+                  <span className="text-base leading-none mt-0.5">{step.icon}</span>
+                  <p className="text-sm opacity-70">{step.text}</p>
+                </div>
+              ))}
+            </div>
+            {/* Стрелка вниз */}
+            <div
+              className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 rotate-45"
+              style={{
+                background: isDark ? '#1a2035' : '#ffffff',
+                border: '1px solid rgba(233,30,140,0.3)',
+                borderTop: 'none',
+                borderLeft: 'none',
+              }}
+            />
+          </div>
         </div>
       )}
 
