@@ -13,7 +13,7 @@ const initialTasks = [
 
 const CHECKLIST_KEY = "cybershield_checklist"
 
-export default function ChecklistTab({ isDark = true }: { isDark?: boolean }) {
+export default function ChecklistTab({ isDark: _isDark = true }: { isDark?: boolean }) {
   const [checked, setChecked] = useState<Set<number>>(() => {
     try {
       const saved = localStorage.getItem(CHECKLIST_KEY)

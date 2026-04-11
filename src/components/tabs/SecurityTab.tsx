@@ -64,10 +64,8 @@ export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
   const hasMaster = !!localStorage.getItem(MASTER_KEY)
   const [masterUnlocked, setMasterUnlocked] = useState(false)
   const [masterInput, setMasterInput] = useState("")
-  const [masterSetup, setMasterSetup] = useState(false)
   const [masterConfirm, setMasterConfirm] = useState("")
   const [masterError, setMasterError] = useState("")
-  const [showMasterInput, setShowMasterInput] = useState(false)
 
   const [saved, setSaved] = useState<SavedPassword[]>([])
   const [saveLabel, setSaveLabel] = useState("")
@@ -107,7 +105,6 @@ export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
     if (masterInput !== masterConfirm) { setMasterError("Пароли не совпадают"); return }
     localStorage.setItem(MASTER_KEY, simpleHash(masterInput))
     setMasterUnlocked(true)
-    setMasterSetup(false)
     setMasterInput("")
     setMasterConfirm("")
     setMasterError("")
@@ -306,7 +303,7 @@ export default function SecurityTab({ isDark = true }: { isDark?: boolean }) {
             <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(233,30,140,0.1)' }}>
               <Icon name="ShieldCheck" size={26} style={{ color: '#e91e8c' }} />
             </div>
-            {!hasMaster || masterSetup ? (
+            {!hasMaster ? (
               <>
                 <div className="text-center">
                   <p className="font-semibold text-sm">Создайте мастер-пароль</p>

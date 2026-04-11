@@ -184,7 +184,7 @@ const categories = [
 
 type Article = (typeof categories)[0]["articles"][0]
 
-export default function KnowledgeTab({ isDark = true }: { isDark?: boolean }) {
+export default function KnowledgeTab({ isDark: _isDark = true }: { isDark?: boolean }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeArticle, setActiveArticle] = useState<Article | null>(null)
   const [search, setSearch] = useState("")
@@ -198,7 +198,7 @@ export default function KnowledgeTab({ isDark = true }: { isDark?: boolean }) {
             a.title.toLowerCase().includes(search.toLowerCase()) ||
             a.preview.toLowerCase().includes(search.toLowerCase())
           )
-          .map((a) => ({ ...a, catLabel: cat.label, catColor: cat.color, catBg: cat.bg, catIcon: cat.icon }))
+          .map((a) => ({ article: a, catLabel: cat.label }))
       )
     : []
 
@@ -281,12 +281,12 @@ export default function KnowledgeTab({ isDark = true }: { isDark?: boolean }) {
           {searchResults.length === 0 ? (
             <p className="text-sm text-white/40 text-center py-6">Ничего не найдено</p>
           ) : (
-            searchResults.map((a, i) => (
-              <button key={i} onClick={() => { setActiveArticle(a); setSearch("") }}
+            searchResults.map((r, i) => (
+              <button key={i} onClick={() => { setActiveArticle(r.article); setSearch("") }}
                 className="w-full bg-white/5 border border-white/8 rounded-2xl p-4 text-left hover:bg-white/8 transition">
-                <p className="text-[10px] opacity-40 mb-1">{a.catLabel}</p>
-                <p className="font-semibold text-sm">{a.title}</p>
-                <p className="text-white/50 text-xs mt-1">{a.preview}</p>
+                <p className="text-[10px] opacity-40 mb-1">{r.catLabel}</p>
+                <p className="font-semibold text-sm">{r.article.title}</p>
+                <p className="text-white/50 text-xs mt-1">{r.article.preview}</p>
               </button>
             ))
           )}
