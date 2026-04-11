@@ -28,6 +28,7 @@ export default function Index() {
   const [showBanner, setShowBanner] = useState(false)
   const [installed, setInstalled] = useState(false)
   const [showApkMenu, setShowApkMenu] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     // Проверяем — уже установлено?
@@ -137,6 +138,22 @@ export default function Index() {
                   />
                 </div>
                 <p className="text-[10px] opacity-30 text-center">Наведи камеру телефона</p>
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({ title: 'КиберЩит', url: 'https://preview--flash-innovation-lab.poehali.dev/' })
+                    } else {
+                      navigator.clipboard.writeText('https://preview--flash-innovation-lab.poehali.dev/')
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-80 mt-1"
+                  style={{ background: isDark ? 'rgba(233,30,140,0.15)' : 'rgba(233,30,140,0.1)', color: '#e91e8c' }}
+                >
+                  <Icon name={copied ? "Check" : "Share2"} size={15} />
+                  {copied ? 'Скопировано!' : 'Поделиться'}
+                </button>
               </div>
             </div>
           )}
